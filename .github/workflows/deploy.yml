@@ -1,0 +1,54 @@
+name: Deploy App to GitHub Pages
+
+on:
+  # Sadece main dalına push yapıldığında bu action tetiklensin
+  push:
+    branches: ['main']
+  
+  # GitHub Actions sekmesinden manuel olarak tetiklemeye izin ver   
+  workflow_dispatch:
+
+# Gerekli Okuma/Yazma İzinleri
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Aynı anda birden fazla deploy olmasını engelle
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build Project (Vite Static)
+        run: npm run build
+        
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
