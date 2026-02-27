@@ -71,7 +71,11 @@ async function getClubsFromCompetition(compId, slug) {
 async function run() {
     const competitions = [
         { id: 'TR1', slug: 'super-lig' },
-        { id: 'ES1', slug: 'laliga' }
+        { id: 'ES1', slug: 'laliga' },
+        { id: 'GB1', slug: 'premier-league' },
+        { id: 'IT1', slug: 'serie-a' },
+        { id: 'L1', slug: 'bundesliga' },
+        { id: 'FR1', slug: 'ligue-1' }
     ];
 
     const allClubs = []; // Bu array tüm DB'yi oluşturacak
