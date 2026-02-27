@@ -1,3 +1,6 @@
+import * as domtoimage_module from 'dom-to-image-more';
+const domtoimage = domtoimage_module.default || domtoimage_module;
+
 // State
 let appState = {
   language: 'tr', // default language
@@ -555,10 +558,8 @@ function getSafeImageUrl(url) {
   return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 }
 
-import domtoimage from 'dom-to-image-more';
-
 // DOM Elements
-const searchInput = document.getElementById('search-input');
+const searchInput = document.getElementById('club-search');
 const searchResults = document.getElementById('search-results');
 const activeClubCard = document.getElementById('active-club-card');
 const formationControls = document.getElementById('formation-controls');
@@ -605,6 +606,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSquadTextInputs();
   setupViewModeToggle();
   renderPitch();
+
+  // Set initial formation
+  document.getElementById('display-formation').textContent = appState.formation;
 });
 
 function setupViewModeToggle() {
