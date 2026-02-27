@@ -540,7 +540,7 @@ let staticDB = null;
 async function getStaticDB() {
   if (staticDB) return staticDB;
   try {
-    const res = await fetch('/data/db.json');
+    const res = await fetch('./data/db.json');
     if (res.ok) {
       staticDB = await res.json();
     }
@@ -553,7 +553,7 @@ async function getStaticDB() {
 function getSafeImageUrl(url) {
   if (!url) return '';
   // If the URL is already a local static path, don't pass it to the proxy
-  if (url.startsWith('/data')) return url;
+  if (url.startsWith('/data')) return '.' + url;
   // Otherwise, use the Node.js backend proxy to bypass CORS
   return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 }
