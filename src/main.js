@@ -529,11 +529,36 @@ const formations = {
   }
 };
 
+// ==========================================
+// Static Fallback Helpers (For GitHub Pages Deployment)
+// ==========================================
+let staticDB = null;
+
+async function getStaticDB() {
+  if (staticDB) return staticDB;
+  try {
+    const res = await fetch('/data/db.json');
+    if (res.ok) {
+      staticDB = await res.json();
+    }
+  } catch (err) {
+    console.warn("Could not load static fallback database");
+  }
+  return staticDB || [];
+}
+
+function getSafeImageUrl(url) {
+  if (!url) return '';
+  // If the URL is already a local static path, don't pass it to the proxy
+  if (url.startsWith('/data')) return url;
+  // Otherwise, use the Node.js backend proxy to bypass CORS
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+}
 
 import domtoimage from 'dom-to-image-more';
 
 // DOM Elements
-const searchInput = document.getElementById('club-search');
+const searchInput = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 const activeClubCard = document.getElementById('active-club-card');
 const formationControls = document.getElementById('formation-controls');
@@ -1015,10 +1040,18 @@ function setupSearch() {
     debounceTimeout = setTimeout(async () => {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (!res.ok) throw new Error("API Fetch Error");
         const data = await res.json();
         renderSearchResults(data);
       } catch (err) {
-        console.error("Search failed:", err);
+        console.warn("API Search failed, falling back to static DB");
+        const db = await getStaticDB();
+        const results = db.filter(c => c.name.toLowerCase().includes(query.toLowerCase())).map(c => ({
+          id: c.id,
+          name: c.name,
+          image: c.image || c.originalImage
+        }));
+        renderSearchResults(results);
       }
     }, 500);
   });
@@ -1056,7 +1089,7 @@ function renderSearchResults(data) {
   } else {
     searchResults.innerHTML = data.map(club => `
       <div class="search-result-item" data-id="${club.id}" data-name="${club.name}" data-img="${club.image || ''}">
-        ${club.image ? `<img src="/api/image-proxy?url=${encodeURIComponent(club.image)}" crossorigin="anonymous" alt="">` : '<div style="width:24px;height:24px;background:#333;border-radius:50%"></div>'}
+        ${club.image ? `<img src="${getSafeImageUrl(club.image)}" crossorigin="anonymous" alt="">` : '<div style="width:24px;height:24px;background:#333;border-radius:50%"></div>'}
         <span>${club.name}</span>
       </div>
     `).join('');
@@ -1094,6 +1127,7 @@ async function selectClub(clubData) {
   // Fetch squad
   try {
     const res = await fetch(`/api/squad/${clubData.id}`);
+    if (!res.ok) throw new Error("API Fetch Error");
     const squad = await res.json();
     if (squad && !squad.error) {
       appState.squad = squad.filter(player => player.name); // valid players
@@ -1101,8 +1135,14 @@ async function selectClub(clubData) {
       showToast(translations[appState.language].failedToLoadSquad, 'error');
     }
   } catch (err) {
-    console.error(err);
-    showToast(translations[appState.language].failedToLoadSquad, 'error');
+    console.warn("API Squad failed, falling back to static DB");
+    const db = await getStaticDB();
+    const club = db.find(c => String(c.id) === String(clubData.id));
+    if (club && club.players) {
+      appState.squad = club.players.filter(player => player.name);
+    } else {
+      showToast(translations[appState.language].failedToLoadSquad, 'error');
+    }
   }
 }
 
@@ -1443,7 +1483,7 @@ function renderPitch() {
       const faceImageUrl = isFilled && player.image ? player.image : '';
       nodeInnerHtml = `
         <div class="player-face-container ${isFilled ? 'filled' : ''}">
-          ${faceImageUrl ? `<img src="/api/image-proxy?url=${encodeURIComponent(faceImageUrl)}" class="player-face" crossorigin="anonymous" onerror="this.src='/favicon.svg'" />` : `<div class="face-placeholder">+</div>`}
+          ${faceImageUrl ? `<img src="${getSafeImageUrl(faceImageUrl)}" class="player-face" crossorigin="anonymous" onerror="this.src='/favicon.svg'" />` : `<div class="face-placeholder">+</div>`}
         </div>
       `;
     }
@@ -1458,7 +1498,7 @@ function renderPitch() {
         ${nodeInnerHtml}
         
         <div class="player-name-pill ${isFilled ? 'active' : ''}">
-          ${badgeImages.map(b => `<img class="pill-badge ${b.type === 'nation' ? 'nation-badge' : ''}" src="/api/image-proxy?url=${encodeURIComponent(b.url)}" crossorigin="anonymous" onerror="this.style.display='none'" />`).join('')}
+          ${badgeImages.map(b => `<img class="pill-badge ${b.type === 'nation' ? 'nation-badge' : ''}" src="${getSafeImageUrl(b.url)}" crossorigin="anonymous" onerror="this.style.display='none'" />`).join('')}
           <span class="pill-name">${displayName}</span>
         </div>
       </div>
@@ -1601,7 +1641,7 @@ function renderSquadList(filterString = '') {
 
     return `
     <div class="squad-list-item" style="opacity: ${opacity}; cursor: ${cursor}" data-id="${player.id}">
-       <img src="${player.image ? '/api/image-proxy?url=' + encodeURIComponent(player.image) : ''}" crossorigin="anonymous" alt="" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
+       <img src="${getSafeImageUrl(player.image)}" crossorigin="anonymous" alt="" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
        <div class="item-details">
           <div class="item-name">${player.name}</div>
           <div class="item-meta">${player.number ? '#' + player.number + ' • ' : ''} ${player.position || 'Unknown'}</div>
