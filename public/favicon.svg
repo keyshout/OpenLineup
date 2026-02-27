@@ -1,0 +1,7 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Siyah Dış Daire -->
+  <circle cx="50" cy="50" r="48" fill="#111112" />
+  
+  <!-- Sarı İç Daire ('O' harfinin boşluğu gibi) -->
+  <circle cx="50" cy="50" r="24" fill="#ffd700" />
+</svg>

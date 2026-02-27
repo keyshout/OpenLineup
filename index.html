@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenLineup - Football Formation Builder</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body>
+  <!-- Animated Background -->
+  <canvas id="gravity-lens-bg" class="gravity-lens-canvas"></canvas>
+
+  <!-- Top Navbar -->
+  <header class="app-header">
+    <div class="header-content">
+      <a href="/" class="header-logo" style="display:flex; align-items:center; gap:8px; text-decoration:none;">
+        <h1 style="margin:0; font-weight:800; letter-spacing:-0.5px;">OpenLineup</h1>
+      </a>
+
+      <!-- Future Nav Links -->
+      <div class="header-nav">
+        <!-- Can add middle links here if needed -->
+      </div>
+
+      <div class="header-actions">
+        <a href="https://github.com/keyshout/OpenLineup" target="_blank" rel="noopener noreferrer"
+          class="github-star-btn">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path
+              d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.46-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z">
+            </path>
+          </svg>
+          <span style="font-weight:600; font-size:13px;">Star us on GitHub</span>
+        </a>
+
+        <div class="lang-selector">
+          <button class="lang-btn active" id="lang-tr">TR</button>
+          <span class="lang-divider">/</span>
+          <button class="lang-btn" id="lang-en">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-wrapper">
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+      <div class="mode-toggle">
+        <button class="mode-btn" data-view="faces" data-i18n="modeFaces">Player Faces</button>
+        <button class="mode-btn active" data-view="jerseys" data-i18n="modeJerseys">Jerseys</button>
+        <button class="mode-btn" data-view="basic" data-i18n="modeBasic">Basic Cards</button>
+        <button class="mode-btn" data-view="fantasia" data-i18n="modeFantasia">Fantasia</button>
+      </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Left Sidebar (Configuration) -->
+      <aside class="left-sidebar">
+
+        <!-- Toolbar Panel -->
+        <div class="toolbar-panel">
+          <button class="tool-btn active" data-tool="settings" title="General Settings"
+            data-i18n-title="toolGeneralSettings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+              </path>
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="jersey-settings" title="Jersey Settings"
+            data-i18n-title="toolJerseySettings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M20.38 3.46L16 2a8 8 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
+            </svg>
+          </button>
+          <button class="tool-btn" data-tool="fantasia-settings" title="Fantasia Settings"
+            data-i18n-title="toolFantasiaSettings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+
+          <div class="settings-group">
+            <label data-i18n="clubBadgeLabel">Club Badge</label>
+            <div class="club-search-wrapper" id="club-search-wrapper">
+              <div class="active-club-pill hidden" id="active-club-card">
+                <img id="active-club-logo" src="" alt="Badge" style="height: 16px; width: 16px; object-fit: contain;">
+                <span id="active-club-name"
+                  style="font-size: 11px; font-weight:600; white-space:nowrap; max-width:80px; overflow:hidden; text-overflow:ellipsis;">Club</span>
+                <svg id="clear-club-btn" style="cursor:pointer; opacity:0.6; margin-left:4px;" width="12" height="12"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+              <input type="text" id="club-search" class="text-input" autocomplete="off" placeholder="Search team..."
+                data-i18n-placeholder="searchPlaceholder">
+            </div>
+            <div id="search-results" class="search-results-dropdown hidden"></div>
+          </div>
+
+          <div class="settings-group" id="formation-controls">
+            <label data-i18n="formationLabel">Formation</label>
+            <select id="formation-select" class="text-input" style="cursor:pointer;">
+              <option value="4-3-3">4-3-3</option>
+              <option value="4-4-2">4-4-2</option>
+              <option value="3-5-2">3-5-2</option>
+              <option value="4-2-3-1">4-2-3-1</option>
+              <option value="3-4-3">3-4-3</option>
+              <option value="4-1-4-1">4-1-4-1</option>
+              <option value="4-3-2-1">4-3-2-1</option>
+              <option value="5-3-2">5-3-2</option>
+              <option value="4-4-2-diamond">4-4-2 Diamond</option>
+              <option value="4-1-2-1-2">4-1-2-1-2</option>
+              <option value="3-4-2-1">3-4-2-1</option>
+              <option value="5-4-1">5-4-1</option>
+              <option value="4-2-4">4-2-4</option>
+              <option value="4-2-2-2">4-2-2-2</option>
+              <option value="4-5-1">4-5-1</option>
+              <option value="4-4-1-1">4-4-1-1</option>
+              <option value="4-3-1-2">4-3-1-2</option>
+              <option value="4-1-3-2">4-1-3-2</option>
+              <option value="3-4-1-2">3-4-1-2</option>
+              <option value="3-1-4-2">3-1-4-2</option>
+              <option value="5-2-3">5-2-3</option>
+              <option value="5-2-1-2">5-2-1-2</option>
+            </select>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="captainLabel">Captain</label>
+            <select id="captain-select" class="text-input" style="cursor:pointer;">
+              <option value="" data-i18n="noCaptain">None</option>
+            </select>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="squadTitleLabel">Squad Title</label>
+            <input type="text" id="squad-title-input" class="text-input" placeholder="Enter title..."
+              data-i18n-placeholder="squadTitlePlaceholder">
+          </div>
+          <div class="settings-group">
+            <label data-i18n="subtitleLabel">Subtitle</label>
+            <input type="text" id="squad-subtitle-input" class="text-input" placeholder="Enter subtitle..."
+              data-i18n-placeholder="subtitlePlaceholder">
+          </div>
+
+          <div class="toggles-container">
+            <div class="toggle-row">
+              <span class="toggle-label" data-i18n="toggle3dPitch">3D Pitch Design</span>
+              <label class="switch">
+                <input type="checkbox" id="toggle-3d-style" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span class="toggle-label" data-i18n="toggleClubBadge">Display club badge</span>
+              <label class="switch">
+                <input type="checkbox" id="toggle-club-badge" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span class="toggle-label" data-i18n="toggleCenterBadge">Display center club badge</span>
+              <label class="switch">
+                <input type="checkbox" id="toggle-center-badge" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <span class="toggle-label" data-i18n="toggleNationBadge">Display nationality badge</span>
+              <label class="switch">
+                <input type="checkbox" id="toggle-nation-badge" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jersey Settings Panel -->
+        <div id="jersey-settings-panel" class="controls-panel hidden">
+          <div class="settings-group">
+            <h3 data-i18n="basicCardSettingsTitle" style="color:var(--text-main); font-size:14px; margin-bottom:10px;">
+              Basic Card Settings</h3>
+          </div>
+          <div class="settings-group">
+            <label data-i18n="basicCardColor">Basic Card Color</label>
+            <input type="color" id="basic-card-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+          <div class="settings-group" style="margin-top: 15px;">
+            <h3 data-i18n="jerseySettingsTitle" style="color:var(--text-main); font-size:14px; margin-bottom:10px;">
+              Jersey Settings</h3>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="jerseyStyle">Style</label>
+            <select id="jersey-style-input" class="text-input" style="cursor:pointer;">
+              <option value="solid" data-i18n="styleSolid">Solid</option>
+              <option value="striped" data-i18n="styleStriped">Striped</option>
+              <option value="hooped" data-i18n="styleHooped">Hooped</option>
+              <option value="halved" data-i18n="styleHalved">Halved</option>
+            </select>
+          </div>
+          <div class="settings-group">
+            <label data-i18n="primaryColor">Primary Color</label>
+            <input type="color" id="primary-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+          <div class="settings-group">
+            <label data-i18n="secondaryColor">Secondary Color</label>
+            <input type="color" id="secondary-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+          <div class="settings-group">
+            <label data-i18n="tertiaryColor">Collar Color</label>
+            <input type="color" id="tertiary-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+
+          <div class="settings-group" style="margin-top: 15px;">
+            <label data-i18n="gkPrimaryColor">GK Primary Color</label>
+            <input type="color" id="gk-primary-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+          <div class="settings-group" style="margin-bottom: 20px;">
+            <label data-i18n="gkTertiaryColor">GK Collar Color</label>
+            <input type="color" id="gk-tertiary-color-input" class="text-input"
+              style="padding: 2px 4px; height: 36px; cursor: pointer;">
+          </div>
+        </div>
+
+        <!-- Fantasia Settings Panel -->
+        <div id="fantasia-settings-panel" class="controls-panel hidden">
+
+          <div class="toggles-container" style="margin-top: -1px;">
+            <div class="toggle-row">
+              <span class="toggle-label" data-i18n="toggle3dPitch"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%; display: block;">3D
+                Pitch Design</span>
+              <label class="switch">
+                <input type="checkbox" id="fan-toggle-3d-style" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="squadTitleLabel">Squad Title</label>
+            <input type="text" id="fan-squad-title-input" class="text-input" placeholder="Enter title..."
+              data-i18n-placeholder="squadTitlePlaceholder">
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="playerCountLabel">Player Count</label>
+            <select id="fan-player-count" class="text-input" style="cursor:pointer;">
+              <option value="11">11</option>
+              <option value="10">10</option>
+              <option value="9">9</option>
+              <option value="8">8</option>
+              <option value="7">7</option>
+              <option value="6">6</option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="captainLabel">Captain</label>
+            <select id="fan-captain-select" class="text-input" style="cursor:pointer;">
+              <option value="" data-i18n="noCaptain">None</option>
+            </select>
+          </div>
+
+          <div class="settings-group">
+            <label data-i18n="cardModeLabel">Card Mode</label>
+            <select id="fan-card-mode" class="text-input" style="cursor:pointer;">
+              <option value="jerseys" data-i18n="modeJerseys">Jerseys</option>
+              <option value="basic" data-i18n="modeBasic">Basic Cards</option>
+            </select>
+          </div>
+
+          <!-- Dependents: BASIC -->
+          <div id="fan-basic-settings" class="hidden" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="settings-group">
+              <label data-i18n="basicCardColor">Basic Card Color</label>
+              <input type="color" id="fan-basic-color-input" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+          </div>
+
+          <!-- Dependents: JERSEY -->
+          <div id="fan-jersey-settings" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="settings-group">
+              <label data-i18n="jerseyStyle">Style</label>
+              <select id="fan-jersey-style-input" class="text-input" style="cursor:pointer;">
+                <option value="solid" data-i18n="styleSolid">Solid</option>
+                <option value="striped" data-i18n="styleStriped">Striped</option>
+                <option value="hooped" data-i18n="styleHooped">Hooped</option>
+                <option value="halved" data-i18n="styleHalved">Halved</option>
+              </select>
+            </div>
+            <div class="settings-group">
+              <label data-i18n="primaryColor">Primary Color</label>
+              <input type="color" id="fan-primary-color" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+            <div class="settings-group">
+              <label data-i18n="secondaryColor">Secondary Color</label>
+              <input type="color" id="fan-secondary-color" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+            <div class="settings-group">
+              <label data-i18n="tertiaryColor">Collar Color</label>
+              <input type="color" id="fan-tertiary-color" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+            <div class="settings-group">
+              <label data-i18n="gkPrimaryColor">GK Primary Color</label>
+              <input type="color" id="fan-gk-primary" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+            <div class="settings-group">
+              <label data-i18n="gkTertiaryColor">GK Collar Color</label>
+              <input type="color" id="fan-gk-tertiary" class="text-input"
+                style="padding: 2px 4px; height: 36px; cursor: pointer;">
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Right Main Content (Pitch) -->
+      <section class="right-content">
+        <div class="pitch-card">
+          <!-- Toast Notifications scoped to pitch -->
+          <div id="toast-container" class="toast-container"></div>
+
+          <div class="pitch-wrapper" id="pitch-capture-area">
+
+            <!-- Graphic Background Typography -->
+            <div class="bg-typography">OPEN</div>
+            <div class="bg-typography bottom">LINEUP</div>
+
+            <!-- Central Floating Club Logo -->
+            <img id="pitch-center-logo" class="pitch-center-logo hidden" src="" alt="Club Center Logo" />
+
+            <!-- Formation Text Decoration -->
+            <div class="formation-deco">
+              <div class="formation-text" id="display-formation">4-3-3</div>
+              <div class="squad-title-text" id="fan-display-squad-title" style="display:none;"></div>
+              <a href="https://github.com/keyshout/OpenLineup" target="_blank" class="brand-badge"
+                style="background:var(--accent); color:#181717; display:inline-flex; align-items:center; gap:4px; text-decoration:none; cursor:pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Beyaz Yuvarlak Arkaplan -->
+                  <circle cx="12" cy="12" r="11" fill="#181717" />
+                  <!-- Koyu Renkli GitHub Logosunun İçi -->
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"
+                    fill="#ffffff" />
+                </svg>
+                keyshout/OpenLineup
+              </a>
+            </div>
+
+            <!-- Squad Title Decoration -->
+            <div class="title-deco" id="normal-title-deco">
+              <div class="squad-title-text" id="display-squad-title"></div>
+              <div class="squad-subtitle-text" id="display-squad-subtitle"></div>
+            </div>
+
+            <!-- Board Edge Design -->
+            <div class="pitch-board style-3d" id="pitch-board">
+
+              <!-- 3D Board Badges (Only visible in 3D mode) -->
+              <div class="board-badge badge-left">
+                <div class="badge-accent">OPEN</div>
+                <div>LINEUP</div>
+              </div>
+              <div class="board-badge badge-right">
+                <div class="badge-accent">OPEN</div>
+                <div>LINEUP</div>
+              </div>
+
+              <!-- Faint styling text on the side borders (3D style) -->
+              <div class="board-side-text text-left">OPENLINEUP</div>
+              <div class="board-side-text text-right">OPENLINEUP</div>
+
+              <div class="pitch-surface">
+                <!-- SVG Pitch Lines (Darker tone) -->
+                <svg class="pitch-lines" viewBox="0 0 100 130" preserveAspectRatio="none">
+                  <rect x="2" y="2" width="96" height="126" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"
+                    fill="none" />
+                  <line x1="2" y1="65" x2="98" y2="65" stroke="rgba(255,255,255,0.2)" stroke-width="0.3" />
+                  <circle cx="50" cy="65" r="9" stroke="rgba(255,255,255,0.2)" stroke-width="0.3" fill="none" />
+                  <rect x="20" y="2" width="60" height="18" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"
+                    fill="none" />
+                  <rect x="20" y="110" width="60" height="18" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"
+                    fill="none" />
+                  <rect x="35" y="2" width="30" height="6" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"
+                    fill="none" />
+                  <rect x="35" y="122" width="30" height="6" stroke="rgba(255,255,255,0.2)" stroke-width="0.3"
+                    fill="none" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Nodes (Rendered over the entire board without 3D rotation) -->
+            <div id="formation-nodes" class="formation-nodes"
+              style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none;">
+            </div>
+
+          </div>
+        </div>
+
+        <div class="action-footer" style="margin-top:20px;">
+          <button id="share-x-btn" class="save-share-btn">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span data-i18n="saveShareBtn">Save & Share</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <strong>OpenLineup</strong> &copy; 2026
+        <span class="footer-divider">•</span>
+        Open Source Football Formation Builder
+      </div>
+      <div class="footer-right">
+        Released under the
+        <a href="https://opensource.org/licenses/MIT" target="_blank"
+          style="color:var(--accent); text-decoration:none;">MIT License</a>
+        <span class="footer-divider">•</span>
+        Built with <a href="https://vitejs.dev" target="_blank" style="color:#fff; text-decoration:underline;">Vite</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Player Selection Modal Overlay -->
+  <div id="player-modal" class="modal-overlay hidden">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h3 data-i18n="selectPlayerTitle">Select Player</h3>
+        <button id="close-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-search">
+        <input type="text" id="player-search-filter" class="text-input" placeholder="Filter squad..."
+          data-i18n-placeholder="filterSquadPlaceholder">
+      </div>
+      <div id="squad-list" class="squad-list">
+        <!-- Populated via JS -->
+        <div class="loading-spinner" data-i18n="loadingSquad">Loading squad...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Entry Modal Overlay -->
+  <div id="manual-player-modal" class="modal-overlay hidden">
+    <div class="modal-content glass" style="height: auto; max-height: 90vh;">
+      <div class="modal-header">
+        <h3 data-i18n="enterPlayerNameTitle">Enter Player Name</h3>
+        <button id="close-manual-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <input type="text" id="manual-player-name" class="text-input" placeholder="Player Name (e.g. Ronaldinho)"
+          style="width: 100%; margin-bottom: 10px;" data-i18n-placeholder="playerNamePlaceholder">
+        <input type="number" id="manual-player-number" class="text-input" placeholder="Kit Number (e.g. 10)"
+          style="width: 100%; margin-bottom: 20px;" data-i18n-placeholder="kitNumberPlaceholder">
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button id="clear-manual-player"
+            style="background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: inherit;"
+            data-i18n="clearSlotBtn">Clear
+            Slot</button>
+          <button id="save-manual-player"
+            style="background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit;"
+            data-i18n="saveBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
