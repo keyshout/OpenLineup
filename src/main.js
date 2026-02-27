@@ -1211,7 +1211,7 @@ function updateCenterBadge() {
   if (!centerLogo) return;
 
   if (appState.showCenterBadge && appState.activeClub && appState.activeClub.img) {
-    centerLogo.src = appState.activeClub.img;
+    centerLogo.src = getSafeImageUrl(appState.activeClub.img);
     centerLogo.classList.remove('hidden');
   } else {
     centerLogo.classList.add('hidden');
