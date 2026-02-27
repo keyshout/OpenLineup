@@ -89,7 +89,7 @@ async function run() {
                 const ext = club.image.split('?')[0].split('.').pop() || 'png';
                 const dest = path.join(IMG_CLUBS_DIR, `${club.id}.${ext}`);
                 await downloadImage(club.image, dest);
-                clubLocalImg = `/data/img/clubs/${club.id}.${ext}`;
+                clubLocalImg = `./data/img/clubs/${club.id}.${ext}`;
             }
 
             // 2. Takım Kadrosunu Çek (scraper.js üzerinden)
@@ -106,7 +106,7 @@ async function run() {
                 if (p.image && !p.image.includes('default.jpg') && !p.image.includes('default.png')) {
                     const dest = path.join(IMG_PLAYERS_DIR, `${p.id}.jpg`);
                     await downloadImage(p.image, dest);
-                    pImgLocal = `/data/img/players/${p.id}.jpg`;
+                    pImgLocal = `./data/img/players/${p.id}.jpg`;
                 }
 
                 let flagLocal = null;
@@ -114,7 +114,7 @@ async function run() {
                     const cleanNat = p.natName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() || 'unknown';
                     const dest = path.join(IMG_FLAGS_DIR, `${cleanNat}.png`);
                     await downloadImage(p.natImage, dest);
-                    flagLocal = `/data/img/flags/${cleanNat}.png`;
+                    flagLocal = `./data/img/flags/${cleanNat}.png`;
                 }
 
                 localSquad.push({
