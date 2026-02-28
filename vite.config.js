@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
 export default defineConfig(({ command }) => {
     return {
@@ -10,6 +11,14 @@ export default defineConfig(({ command }) => {
                     changeOrigin: true,
                 }
             }
-        } : undefined
+        } : undefined,
+        build: {
+            rollupOptions: {
+                input: {
+                    main: resolve(__dirname, 'index.html'),
+                    simulation: resolve(__dirname, 'simulation.html')
+                }
+            }
+        }
     }
 });

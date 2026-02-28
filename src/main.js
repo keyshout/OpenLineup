@@ -100,7 +100,9 @@ const translations = {
     modeFantasia: "Fantasia",
     toolFantasiaSettings: "Fantasia Settings",
     playerCountLabel: "Player Count",
-    cardModeLabel: "Card Mode"
+    cardModeLabel: "Card Mode",
+    funSimulation: "Fun Simulation",
+    navBuilder: "Formation Builder"
   },
   tr: {
     modeFaces: "Oyuncu Resimleri",
@@ -157,12 +159,15 @@ const translations = {
     modeFantasia: "Fantasia",
     toolFantasiaSettings: "Fantasia Ayarları",
     playerCountLabel: "Oyuncu Sayısı",
-    cardModeLabel: "Kart Türü"
+    cardModeLabel: "Kart Türü",
+    funSimulation: "Eğlenceli Simülasyon",
+    navBuilder: "Kadro Yapıcı"
   }
 };
 
 function setLanguage(lang) {
   appState.language = lang;
+  localStorage.setItem('openlineup-lang', lang);
   const t = translations[lang];
   if (!t) return;
 
@@ -627,7 +632,9 @@ const fanCaptainSelect = document.getElementById('fan-captain-select');
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  setLanguage(appState.language); // Initialize translations
+  const savedLang = localStorage.getItem('openlineup-lang') || 'tr';
+  appState.language = savedLang;
+  setLanguage(savedLang); // Initialize translations
   setupSearch();
   setupFormation();
   setupModal();
@@ -638,11 +645,32 @@ document.addEventListener('DOMContentLoaded', () => {
   setupToolbar();
   setupSquadTextInputs();
   setupViewModeToggle();
+  setupSimulationBtn();
   renderPitch();
 
   // Set initial formation
   document.getElementById('display-formation').textContent = appState.formation;
 });
+
+function setupSimulationBtn() {
+  const btn = document.getElementById('nav-simulation-btn');
+  if (!btn) return;
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // Eğer halihazırda bir takım seçiliyse storage'a atıyoruz (simulasyonda kolaylık için).
+    // Yoksa boş bırakıyoruz (sayfadan seçilebilir).
+    if (appState.activeClub) {
+      const simData = {
+        team1: appState.activeClub
+      };
+      localStorage.setItem('openlineup_simulation_data', JSON.stringify(simData));
+    }
+
+    // Yeni sayfaya git
+    window.location.href = './simulation.html';
+  });
+}
 
 function setupViewModeToggle() {
   const modeBtns = document.querySelectorAll('.mode-toggle .mode-btn');
