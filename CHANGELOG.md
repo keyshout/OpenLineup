@@ -18,5 +18,5 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Mobile 3D Pitch Rendering:** Resolved an issue where enabling 3D style zoomed the pitch borders outside of the screen bounds by overriding flex shrinkage limits.
 - **Text Title Clipping:** Fixed the visual overlapping of text headers (e.g., Formation Name & Custom Titles) against the team logos when rendered on narrow screens.
-- **Sharing Mechanism Limitations:** Updated the `X`/Twitter intent to smoothly fallback into the system's clipboard if the web-share API fails under local unsecure contexts.
 - **`generate_static.js` Enhancements:** Script now writes directly to the `.sqlite` persistence layer instead of legacy `.json`.
+- **Global Search Order:** Appended `ORDER BY id ASC` to all internal SQLite `LIKE` queries to prevent players and clubs from returning in randomized rows.

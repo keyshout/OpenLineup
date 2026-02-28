@@ -1131,8 +1131,8 @@ function setupSearch() {
         let results = [];
         if (db) {
           try {
-            // Execute a SQL query to search clubs by name (case-insensitive)
-            const stmt = db.prepare("SELECT * FROM clubs WHERE name LIKE ? LIMIT 10");
+            // Execute a SQL query to search clubs by name (case-insensitive), ordered by ID
+            const stmt = db.prepare("SELECT * FROM clubs WHERE name LIKE ? ORDER BY id ASC LIMIT 10");
             stmt.bind([`%${query}%`]);
 
             while (stmt.step()) {
@@ -1237,7 +1237,7 @@ async function selectClub(clubData) {
     let squadResults = [];
     if (db) {
       try {
-        const stmt = db.prepare("SELECT * FROM players WHERE club_id = ?");
+        const stmt = db.prepare("SELECT * FROM players WHERE club_id = ? ORDER BY id ASC");
         stmt.bind([Number(clubData.id)]);
 
         while (stmt.step()) {
@@ -1748,9 +1748,9 @@ async function renderSquadList(filterString = '') {
     try {
       const db = await getStaticDB();
       if (db) {
-        // Query players globally matching name or position
-        const stmt = db.prepare("SELECT * FROM players WHERE name LIKE ? OR position LIKE ? LIMIT 50");
-        stmt.bind([`%${term}%`, `%${term}%`]);
+        // Query players globally matching name, or exact position, ordered by ID
+        const stmt = db.prepare("SELECT * FROM players WHERE name LIKE ? OR position = ? ORDER BY id ASC LIMIT 50");
+        stmt.bind([`%${term}%`, term]);
         while (stmt.step()) {
           results.push(stmt.getAsObject());
         }
