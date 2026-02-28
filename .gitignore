@@ -7,8 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Custom Scripts
+# Scraper and DB Update Scripts (Backend/Admin Only)
 scripts/add_legends.js
+scripts/add_retired.js
 
 node_modules
 dist
