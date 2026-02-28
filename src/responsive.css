@@ -112,7 +112,7 @@
     /* Better mobile typography scaling for brand badge and squad title */
     .formation-deco {
         left: 10px;
-        top: -8px;
+        top: -6px;
         /* Push to the very top edge of the card */
     }
 
@@ -227,7 +227,7 @@
 
     .formation-deco {
         left: 8px;
-        top: -6px;
+        top: -4px;
         /* Push to the very top edge of the card */
     }
 

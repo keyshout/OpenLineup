@@ -263,6 +263,21 @@ const formations = {
       { id: 10, x: 50, y: 20, label: 'ST' },
     ]
   },
+  '4-6-0 (False 9)': {
+    nodes: [
+      { id: 0, x: 50, y: 84, label: 'GK' },
+      { id: 1, x: 16, y: 70, label: 'LB' },
+      { id: 2, x: 38, y: 75, label: 'CB' },
+      { id: 3, x: 62, y: 75, label: 'CB' },
+      { id: 4, x: 84, y: 70, label: 'RB' },
+      { id: 5, x: 38, y: 55, label: 'CDM' },
+      { id: 6, x: 62, y: 55, label: 'CDM' },
+      { id: 7, x: 16, y: 35, label: 'LM' },
+      { id: 8, x: 38, y: 38, label: 'CAM' },
+      { id: 9, x: 62, y: 38, label: 'CAM' },
+      { id: 10, x: 84, y: 35, label: 'RM' },
+    ]
+  },
   '3-4-3': {
     nodes: [
       { id: 0, x: 50, y: 84, label: 'GK' },
