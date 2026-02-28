@@ -1,0 +1,249 @@
+/* =========================================
+   Responsive Design (Mobile First Adjustments)
+   ========================================= */
+
+@media (max-width: 900px) {
+    .app-wrapper {
+        height: auto;
+        min-height: calc(100vh - 54px);
+        border-radius: 0;
+        margin: 0 auto;
+    }
+
+    .header-content {
+        width: 100vw;
+        padding: 0 10px;
+        /* Reduced from 15px to fit more */
+        gap: 8px;
+        /* Ensure space between items */
+    }
+
+    .github-star-btn span {
+        display: none;
+        /* Hide 'Star us on GitHub' text, keep icon */
+    }
+
+    .github-star-btn {
+        padding: 6px;
+        /* Squarish button for just the icon */
+    }
+
+    .lang-btn {
+        font-size: 11px;
+        /* Slightly smaller */
+    }
+
+    .top-nav {
+        padding: 10px;
+        /* Further reduced padding */
+        justify-content: center;
+    }
+
+    .mode-toggle {
+        display: flex;
+        flex-wrap: wrap;
+        /* Allow wrapping onto two lines if screen is extremely narrow */
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .mode-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        /* Smaller to prevent row wrapping */
+    }
+
+    .main-layout {
+        flex-direction: column;
+        padding: 10px;
+        gap: 15px;
+        overflow-y: auto;
+        /* Allow entire screen to scroll */
+    }
+
+    .left-sidebar {
+        width: 100%;
+        /* Order 2 so Pitch appears first */
+        order: 2;
+    }
+
+    .right-content {
+        width: 100%;
+        order: 1;
+        /* Pitch appears first on mobile */
+        min-height: 50vh;
+        height: auto;
+        flex: none;
+        /* Prevent height shrinking from desktop flex rules */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pitch-card {
+        width: 100%;
+        max-width: calc(100vw - 20px);
+        /* Leave exactly 10px on each side so it doesn't clip */
+        padding: 10px 10px;
+        /* Uniform padding instead of asymmetric */
+        min-height: 50vw;
+        height: auto;
+        flex: none;
+        /* Ensure the card completely wraps the pitch aspect ratio */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: visible;
+        /* Allow the heavy 3D shadow/border to bleed safely without clipping */
+    }
+
+    .pitch-wrapper {
+        width: 100%;
+        max-width: 100%;
+        /* Ensure it does not escape the padded card */
+        height: auto;
+        aspect-ratio: 0.78 / 1;
+        /* Slightly taller ratio to preserve bottom depth and shadow */
+        margin: 0 auto;
+        margin-top: 15px;
+        /* Increase breathing room at the top */
+    }
+
+    /* Better mobile typography scaling for brand badge and squad title */
+    .formation-deco {
+        left: 10px;
+        top: -8px;
+        /* Push to the very top edge of the card */
+    }
+
+    .title-deco {
+        right: 10px;
+        top: -8px;
+        /* Push to the very top edge of the card */
+    }
+
+    .squad-title-text {
+        font-size: 16px;
+    }
+
+    .squad-subtitle-text {
+        font-size: 11px;
+    }
+
+    .formation-text {
+        font-size: 16px;
+    }
+
+    .brand-badge {
+        font-size: 8px;
+        /* Tweak down further */
+        padding: 1px 6px;
+    }
+
+    .pitch-center-logo {
+        top: -16px;
+        /* Push the background watermark to the top edge too */
+    }
+
+    .pitch-board.style-3d {
+        transform: rotateX(25deg) scale(0.93);
+        /* Pull back the 3D offset that bleeds into the green box */
+    }
+
+    /* Restore depth for the 3D surface on mobile */
+    .pitch-board.style-3d .pitch-surface {
+        top: 4%;
+        left: 4%;
+        right: 4%;
+        bottom: 4%;
+    }
+
+    /* Scale back the huge 3D left/right texts overriding boundaries */
+    .pitch-board.style-3d .board-side-text {
+        font-size: 8px;
+        /* Force small on mobile */
+        letter-spacing: 1px;
+    }
+
+    .pitch-board.style-3d .text-left {
+        left: -20px;
+        /* Reduced from -42px */
+    }
+
+    .pitch-board.style-3d .text-right {
+        right: -20px;
+    }
+
+    /* Hide redundant 3D Board badges on mobile to avoid overlap */
+    .board-badge {
+        display: none !important;
+    }
+
+    .action-footer {
+        position: static;
+        margin-top: 15px;
+        margin-bottom: 20px;
+        order: 3;
+    }
+
+    .player-modal-content {
+        margin-top: 50px;
+        height: 80vh;
+        padding: 15px;
+    }
+
+    .header-nav {
+        display: none;
+        /* Hide top nav links on very small screens to save space */
+    }
+}
+
+@media (max-width: 480px) {
+    .pitch-card {
+        min-height: 350px;
+    }
+
+    .player-node {
+        width: 18%;
+        /* Slightly larger nodes on very small phones so they are tappable */
+    }
+
+    .pitch-board.style-3d {
+        border-width: 2px;
+        /* Restore border width for 3D realism */
+        transform: rotateX(25deg) scale(0.97);
+        /* Reel in the overflow offset */
+    }
+
+    .board-side-text {
+        font-size: 8px;
+        letter-spacing: 0px;
+    }
+
+    .board-badge {
+        font-size: 7px;
+        padding: 2px 6px;
+    }
+
+    .formation-deco {
+        left: 8px;
+        top: -6px;
+        /* Push to the very top edge of the card */
+    }
+
+    .title-deco {
+        right: 8px;
+        top: -6px;
+        /* Push to the very top edge of the card */
+    }
+
+    .formation-text,
+    .squad-title-text {
+        font-size: 13px;
+        /* Slightly scaled down again for very tiny phones */
+    }
+
+    .squad-subtitle-text {
+        font-size: 9px;
+    }
+}

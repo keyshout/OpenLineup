@@ -66,9 +66,9 @@ Make sure you have Node.js installed (v18+ recommended).
 ## 📦 Deployment Guide
 
 ### Deploying to GitHub Pages (Static Frontend Only)
-> **⚠️ IMPORTANT:** OpenLineup uses a Node.js backend to bypass Transfermarkt CORS policies for real-time player data. GitHub Pages **only hosts static files**.
+> **⚠️ IMPORTANT:** OpenLineup originally used a Node.js backend to bypass Transfermarkt CORS policies. For static hosts like GitHub Pages, the app now successfully falls back to a massive pre-compiled `database.sqlite` file loaded directly in the browser via WebAssembly (`sql.js`).
 > 
-> If you deploy strictly to GitHub Pages, the **Fantasia Mode** will work perfectly, but the Live Player Search feature will fail because the backend won't be running.
+> If you deploy strictly to GitHub Pages, the **Fantasia Mode** and **Global Player Search** will still work perfectly thanks to the SQLite fallback! Only real-time scraping features require the active Node.js backend.
 
 **To deploy the Frontend to GitHub Pages:**
 1. Update `package.json` with your deploy scripts (e.g. `gh-pages` library).

@@ -59,7 +59,7 @@ body {
    ========================================= */
 .app-wrapper {
   background: var(--app-bg);
-  width: 95vw;
+  width: 100%;
   max-width: 1200px;
   height: calc(100vh - 54px);
   border-radius: 0 0 0 0;
@@ -508,19 +508,21 @@ input:checked+.slider:before {
   padding: 20px 30px;
   box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
   flex: 1;
-  /* take remaining height */
   min-height: 0;
   max-width: 100%;
 }
 
 .pitch-wrapper {
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  height: min(700px, 100%);
+  min-height: 0;
+  min-width: 0;
   aspect-ratio: 0.85;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  max-height: 700px;
 }
 
 /* Background Texts */
@@ -565,7 +567,7 @@ input:checked+.slider:before {
   position: absolute;
   top: 8px;
   left: 20px;
-  z-index: 2;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -575,7 +577,7 @@ input:checked+.slider:before {
   position: absolute;
   top: 8px;
   right: 20px;
-  z-index: 2;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1096,9 +1098,13 @@ input:checked+.slider:before {
   position: absolute;
   top: 16px;
   right: 16px;
+  left: 16px;
+  max-height: calc(100% - 32px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  /* Align right on desktop, override later for mobile if necessary */
   gap: 10px;
   z-index: 9999;
   pointer-events: none;
@@ -1121,7 +1127,9 @@ input:checked+.slider:before {
   opacity: 0;
   transform: translateY(-20px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: max-content;
+  min-width: 200px;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .toast.show {

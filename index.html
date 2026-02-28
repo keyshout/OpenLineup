@@ -7,6 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OpenLineup - Football Formation Builder</title>
   <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/responsive.css">
+  <!-- sql.js for SQLite in browser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.js"></script>
 </head>
 
 <body>
@@ -354,6 +357,7 @@
           <!-- Toast Notifications scoped to pitch -->
           <div id="toast-container" class="toast-container"></div>
 
+
           <div class="pitch-wrapper" id="pitch-capture-area">
 
             <!-- Graphic Background Typography -->
@@ -431,13 +435,22 @@
           </div>
         </div>
 
-        <div class="action-footer" style="margin-top:20px;">
-          <button id="share-x-btn" class="save-share-btn">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="action-footer" style="margin-top:20px; display: flex; gap: 12px; justify-content: center;">
+          <button id="save-local-btn" class="save-share-btn"
+            style="width: 54px; height: 54px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--surface-light); color: var(--text-main); border: 1px solid var(--border);">
+            <svg class="btn-icon" style="margin: 0; width: 22px; height: 22px;" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            <span data-i18n="saveShareBtn">Save & Share</span>
+          </button>
+          <button id="share-x-btn" class="save-share-btn"
+            style="width: 54px; height: 54px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: var(--surface-light); color: var(--text-main); border: 1px solid var(--border);">
+            <svg class="btn-icon" style="margin: 0; width: 22px; height: 22px; color: #fff;" viewBox="0 0 24 24"
+              fill="currentColor">
+              <path
+                d="M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z" />
+            </svg>
           </button>
         </div>
       </section>

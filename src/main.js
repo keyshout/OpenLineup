@@ -61,6 +61,8 @@ const translations = {
     toggleCenterBadge: "Display center club badge",
     toggleNationBadge: "Display nationality badge",
     saveShareBtn: "Save & Share",
+    saveLocalBtn: "Save (Download)",
+    shareXBtn: "Share to X",
     captainLabel: "Captain",
     noCaptain: "None",
     jerseySettingsTitle: "Jersey Settings",
@@ -116,6 +118,8 @@ const translations = {
     toggleCenterBadge: "Saha ortası logoyu göster",
     toggleNationBadge: "Ülke bayrağını göster",
     saveShareBtn: "Kaydet & Paylaş",
+    saveLocalBtn: "Kaydet (İndir)",
+    shareXBtn: "𝕏 Paylaş",
     captainLabel: "Kaptan",
     noCaptain: "Yok",
     jerseySettingsTitle: "Forma Ayarları",
@@ -535,19 +539,29 @@ const formations = {
 // ==========================================
 // Static Fallback Helpers (For GitHub Pages Deployment)
 // ==========================================
-let staticDB = null;
+let staticDB = null; // Will now hold the SQL.Database instance
 
 async function getStaticDB() {
   if (staticDB) return staticDB;
   try {
-    const res = await fetch('./data/db.json');
-    if (res.ok) {
-      staticDB = await res.json();
-    }
+    // Fetch the SQLite file as an ArrayBuffer
+    const response = await fetch('./data/database.sqlite');
+    if (!response.ok) throw new Error("SQLite DB Download Failed");
+    const buffer = await response.arrayBuffer();
+
+    // Initialize sql.js - Fetch wasm from CDN to avoid MIME type or Vite bundling issues
+    const SQL = await window.initSqlJs({
+      locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/${file}`
+    });
+
+    // Create database instance from the buffer
+    staticDB = new SQL.Database(new Uint8Array(buffer));
+    console.log("✅ SQLite Database loaded successfully into memory.");
+
   } catch (err) {
-    console.warn("Could not load static fallback database");
+    console.warn("Could not load SQLite fallback database", err);
   }
-  return staticDB || [];
+  return staticDB;
 }
 
 function getSafeImageUrl(url) {
@@ -573,6 +587,7 @@ const closeModalBtn = document.getElementById('close-modal');
 const squadList = document.getElementById('squad-list');
 const playerSearchFilter = document.getElementById('player-search-filter');
 const shareXBtn = document.getElementById('share-x-btn');
+const saveLocalBtn = document.getElementById('save-local-btn');
 const toggleClubBadge = document.getElementById('toggle-club-badge');
 const toggleNationBadge = document.getElementById('toggle-nation-badge');
 
@@ -970,25 +985,28 @@ function onDragEnd() {
   }
 }
 
-// Setup Sharing (X/Twitter)
+// Setup Sharing (Local Download & X/Twitter)
 function setupSharing() {
-  if (!shareXBtn) return;
 
-  shareXBtn.addEventListener('click', async () => {
-    if (!appState.activeClub && appState.viewMode !== 'fantasia') return;
+  // Shared helper function to capture the pitch
+  const capturePitch = async (btnElement) => {
+    if (!appState.activeClub && appState.viewMode !== 'fantasia') {
+      const msg = appState.language === 'tr' ? "Lütfen önce bir takım arayın veya Fantasia moduna geçin!" : "Please search for a team or switch to Fantasia mode first!";
+      showToast(msg, 'error');
+      return null;
+    }
 
-    const originalText = shareXBtn.innerHTML;
-    shareXBtn.innerHTML = 'Capturing Lineup...';
-    shareXBtn.disabled = true;
+    btnElement.style.opacity = '0.5';
+    btnElement.disabled = true;
 
     try {
-      const pitchEl = document.querySelector('.pitch-wrapper');
+      const pitchEl = document.querySelector('.pitch-card'); // Capture the full card, not just wrapper
+      const bgColor = getComputedStyle(pitchEl).getPropertyValue('--pitch-bg-outer').trim() || '#131f24';
 
-      // Use dom-to-image-more which supports CSS 3D Transforms / Perspective
       const blob = await domtoimage.toBlob(pitchEl, {
-        bgcolor: '#0f172a',
+        bgcolor: bgColor, // Use the actual theme color
         style: {
-          transform: 'scale(2)', // Higher resolution
+          transform: 'scale(2)',
           transformOrigin: 'top left',
           width: pitchEl.offsetWidth + 'px',
           height: pitchEl.offsetHeight + 'px'
@@ -996,38 +1014,94 @@ function setupSharing() {
         width: pitchEl.offsetWidth * 2,
         height: pitchEl.offsetHeight * 2,
         cacheBust: true,
-        allowTaint: true,          // Allow external images
-        imagePlaceholder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' // Transparent pixel fallback
+        allowTaint: true,
+        imagePlaceholder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
       });
 
-      if (!blob) {
-        throw new Error("dom-to-image conversion failed");
-      }
-
-      try {
-        const clipboardItem = new ClipboardItem({ 'image/png': blob });
-        await navigator.clipboard.write([clipboardItem]);
-        showToast(translations[appState.language].imageCopied, 'success');
-
-        // Proceed with sharing metadata
-        const clubName = appState.activeClub ? appState.activeClub.name : (appState.fantasia.squadTitle || 'Fantasia Squad');
-        const formation = appState.formation;
-        const tweetText = `My ${clubName} Starting XI (${formation}) ⚽️🔥\n\n👉 Paste the copied pitch image below! 👇`;
-        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-        window.open(xUrl, '_blank', 'width=600,height=400');
-      } catch (clipboardErr) {
-        console.error("Clipboard write failed:", clipboardErr);
-        showToast(translations[appState.language].copyBlocked, 'error');
-      }
+      if (!blob) throw new Error("dom-to-image conversion failed");
+      return blob;
 
     } catch (err) {
       console.error("Capture Error:", err);
       showToast(translations[appState.language].captureError, 'error');
+      return null;
     } finally {
-      shareXBtn.innerHTML = originalText;
-      shareXBtn.disabled = false;
+      btnElement.style.opacity = '1';
+      btnElement.disabled = false;
     }
-  });
+  };
+
+  // 1. Download Local Button
+  if (saveLocalBtn) {
+    saveLocalBtn.addEventListener('click', async () => {
+      const blob = await capturePitch(saveLocalBtn);
+      if (!blob) return;
+
+      try {
+        const clubName = appState.activeClub ? appState.activeClub.name : (appState.fantasia.squadTitle || 'Fantasia_Squad');
+        const filename = `${clubName.replace(/\s+/g, '_')}_Lineup.png`;
+
+        // Trigger download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Use a generic success message or add one to translations later
+        showToast("Görsel başarıyla kaydedildi!", 'success');
+      } catch (err) {
+        console.error("Download Error:", err);
+      }
+    });
+  }
+
+  // 2. Share to X Button
+  if (shareXBtn) {
+    shareXBtn.addEventListener('click', async () => {
+      const blob = await capturePitch(shareXBtn);
+      if (!blob) return;
+
+      try {
+        const clubName = appState.activeClub ? appState.activeClub.name : (appState.fantasia.squadTitle || 'Fantasia Squad');
+        const formation = appState.formation;
+        const tweetText = `My ${clubName} Starting XI (${formation}) ⚽️🔥`;
+        const fallbackText = `${tweetText}\n\n👉 Paste the copied pitch image below! 👇`;
+        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fallbackText)}`;
+
+        let copied = false;
+
+        // Try clipboard copy (Requires HTTPS in production, may fail on local HTTP preview)
+        if (navigator.clipboard && navigator.clipboard.write) {
+          try {
+            const clipboardItem = new ClipboardItem({ 'image/png': blob });
+            await navigator.clipboard.write([clipboardItem]);
+            copied = true;
+          } catch (clipErr) {
+            console.warn("Clipboard restricted or failed:", clipErr);
+          }
+        }
+
+        if (copied) {
+          const successMsg = appState.language === 'tr' ? "Görsel kopyalandı! Açılan sayfada tweet'e yapıştırın." : "Image copied! Paste it into your tweet.";
+          showToast(successMsg, 'success');
+        } else {
+          const errorMsg = appState.language === 'tr'
+            ? "Görsel otomatik kopyalanamadı. Lütfen önce 'İndir' butonunu kullanıp Twitter'a yükleyin."
+            : "Could not copy image. Please download it first, then attach to your tweet.";
+          showToast(errorMsg, 'error');
+        }
+
+        // Open Twitter Intent regardless of clipboard success
+        window.open(xUrl, '_blank', 'width=600,height=400');
+      } catch (err) {
+        console.error("Share failed:", err);
+      }
+    });
+  }
 }
 
 
@@ -1051,13 +1125,30 @@ function setupSearch() {
         const data = await res.json();
         renderSearchResults(data);
       } catch (err) {
-        console.warn("API Search failed, falling back to static DB");
+        console.warn("API Search failed, falling back to static SQLite DB");
         const db = await getStaticDB();
-        const results = db.filter(c => c.name.toLowerCase().includes(query.toLowerCase())).map(c => ({
-          id: c.id,
-          name: c.name,
-          image: c.image || c.originalImage
-        }));
+
+        let results = [];
+        if (db) {
+          try {
+            // Execute a SQL query to search clubs by name (case-insensitive)
+            const stmt = db.prepare("SELECT * FROM clubs WHERE name LIKE ? LIMIT 10");
+            stmt.bind([`%${query}%`]);
+
+            while (stmt.step()) {
+              const row = stmt.getAsObject();
+              results.push({
+                id: row.id,
+                name: row.name,
+                image: row.image || row.originalImage
+              });
+            }
+            stmt.free();
+          } catch (sqlErr) {
+            console.error("SQLite Query Failed:", sqlErr);
+          }
+        }
+
         renderSearchResults(results);
       }
     }, 500);
@@ -1074,7 +1165,6 @@ function setupSearch() {
     clearClubBtn.addEventListener('click', () => {
       // Reset Club Select UI
       appState.activeClub = null;
-      appState.lineup = {};
       appState.squad = [];
 
       activeClubCard.classList.add('hidden');
@@ -1118,7 +1208,6 @@ async function selectClub(clubData) {
   searchResults.classList.add('hidden');
 
   appState.activeClub = clubData;
-  appState.lineup = {}; // Reset lineup when club changes
 
   document.getElementById('active-club-logo').src = clubData.img || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   document.getElementById('active-club-name').textContent = clubData.name;
@@ -1142,11 +1231,27 @@ async function selectClub(clubData) {
       showToast(translations[appState.language].failedToLoadSquad, 'error');
     }
   } catch (err) {
-    console.warn("API Squad failed, falling back to static DB");
+    console.warn("API Squad failed, falling back to static SQLite DB");
     const db = await getStaticDB();
-    const club = db.find(c => String(c.id) === String(clubData.id));
-    if (club && club.players) {
-      appState.squad = club.players.filter(player => player.name);
+
+    let squadResults = [];
+    if (db) {
+      try {
+        const stmt = db.prepare("SELECT * FROM players WHERE club_id = ?");
+        stmt.bind([Number(clubData.id)]);
+
+        while (stmt.step()) {
+          const row = stmt.getAsObject();
+          if (row.name) squadResults.push(row);
+        }
+        stmt.free();
+      } catch (err) {
+        console.error("SQLite Player Fetch Failed:", err);
+      }
+    }
+
+    if (squadResults.length > 0) {
+      appState.squad = squadResults;
     } else {
       showToast(translations[appState.language].failedToLoadSquad, 'error');
     }
@@ -1559,10 +1664,7 @@ function renderPitch() {
           return;
         }
 
-        if (!appState.activeClub) {
-          showToast(translations[appState.language].selectClubFirst, 'error');
-          return;
-        }
+        // Removed strict activeClub dependency to allow global player db searching!
         appState.activeSlotIndex = parseInt(nodeId);
         openPlayerModal();
       }
@@ -1577,8 +1679,12 @@ function setupModal() {
     if (e.target === playerModal) closePlayerModal();
   });
 
+  let playerSearchDebounce;
   playerSearchFilter.addEventListener('input', (e) => {
-    renderSquadList(e.target.value);
+    clearTimeout(playerSearchDebounce);
+    playerSearchDebounce = setTimeout(() => {
+      renderSquadList(e.target.value);
+    }, 400); // 400ms debounce for typing global names
   });
 
   // Manual Player Modal Events
@@ -1631,18 +1737,50 @@ function closePlayerModal() {
   playerModal.classList.add('hidden');
 }
 
-function renderSquadList(filterString = '') {
-  if (appState.squad.length === 0) {
-    squadList.innerHTML = '<div class="loading-spinner">No squad data available. Are you sure you selected a club?</div>';
+async function renderSquadList(filterString = '') {
+  const term = filterString.toLowerCase().trim();
+  let results = [];
+
+  // Determine search pool (Global DB vs Active Club Squad)
+  if (term.length >= 2) {
+    squadList.innerHTML = `<div class="loading-spinner">${translations[appState.language] ? translations[appState.language].searching || 'Oyuncu aranıyor...' : 'Oyuncu aranıyor...'}</div>`;
+
+    try {
+      const db = await getStaticDB();
+      if (db) {
+        // Query players globally matching name or position
+        const stmt = db.prepare("SELECT * FROM players WHERE name LIKE ? OR position LIKE ? LIMIT 50");
+        stmt.bind([`%${term}%`, `%${term}%`]);
+        while (stmt.step()) {
+          results.push(stmt.getAsObject());
+        }
+        stmt.free();
+      }
+    } catch (err) {
+      console.error("SQLite Player Search Failed:", err);
+    }
+  } else if (!term && appState.activeClub && appState.squad && appState.squad.length > 0) {
+    // Fallback to active club squad if search is empty
+    results = appState.squad;
+  } else if (!term && !appState.activeClub) {
+    // Completely empty state, expecting user to search globally
+    squadList.innerHTML = `<div class="loading-spinner">${translations[appState.language] ? translations[appState.language].typeToSearch || 'Ekrana oyuncu eklemek için yukarıdan isim arayın...' : 'Ekrana oyuncu eklemek için yukarıdan isim arayın...'}</div>`;
+    return;
+  } else {
+    // User typed 1 char, wait for more
+    squadList.innerHTML = `<div class="loading-spinner">${translations[appState.language] ? translations[appState.language].typeMore || 'Arama yapmak için en az 2 karakter girin.' : 'Arama yapmak için en az 2 karakter girin.'}</div>`;
     return;
   }
 
-  const term = filterString.toLowerCase().trim();
-  const filtered = appState.squad.filter(p => p.name.toLowerCase().includes(term) || (p.position && p.position.toLowerCase().includes(term)));
+  // Render Display
+  if (results.length === 0) {
+    squadList.innerHTML = `<div class="loading-spinner">${translations[appState.language] ? translations[appState.language].noPlayersFound || 'Oyuncu bulunamadı.' : 'Oyuncu bulunamadı.'}</div>`;
+    return;
+  }
 
-  squadList.innerHTML = filtered.map(player => {
-    // Check if player is already in lineup
-    const isAlreadyInLineup = Object.values(appState.lineup).some(p => p.id === player.id);
+  squadList.innerHTML = results.map(player => {
+    // Check if player is already in lineup by comparing IDs as strings
+    const isAlreadyInLineup = Object.values(appState.lineup).some(p => String(p.id) === String(player.id));
     const opacity = isAlreadyInLineup ? '0.5' : '1';
     const cursor = isAlreadyInLineup ? 'not-allowed' : 'pointer';
 
@@ -1653,18 +1791,18 @@ function renderSquadList(filterString = '') {
           <div class="item-name">${player.name}</div>
           <div class="item-meta">${player.number ? '#' + player.number + ' • ' : ''} ${player.position || 'Unknown'}</div>
        </div>
-       ${isAlreadyInLineup ? '<span style="color:var(--accent);font-size:12px">In Lineup</span>' : ''}
+       ${isAlreadyInLineup ? `<span style="color:var(--accent);font-size:12px">${appState.language === 'tr' ? 'Kadroda' : 'In Lineup'}</span>` : ''}
     </div>
   `}).join('');
 
-  // Attach listeners
+  // Attach localized click listeners
   document.querySelectorAll('.squad-list-item').forEach(item => {
     item.addEventListener('click', () => {
       const playerId = item.dataset.id;
-      const playerObj = appState.squad.find(p => p.id === playerId);
+      const playerObj = results.find(p => String(p.id) === String(playerId));
       if (playerObj) {
-        // Don't allow duplicates
-        if (Object.values(appState.lineup).some(p => p.id === playerObj.id)) return;
+        // Prevent duplicate insertion
+        if (Object.values(appState.lineup).some(p => String(p.id) === String(playerObj.id))) return;
 
         appState.lineup[appState.activeSlotIndex] = playerObj;
         renderPitch();
