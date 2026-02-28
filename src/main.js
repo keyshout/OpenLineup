@@ -1005,11 +1005,6 @@ function setupSharing() {
 
   // Shared helper function to capture the pitch
   const capturePitch = async (btnElement) => {
-    if (!appState.activeClub && appState.viewMode !== 'fantasia') {
-      const msg = appState.language === 'tr' ? "Lütfen önce bir takım arayın veya Fantasia moduna geçin!" : "Please search for a team or switch to Fantasia mode first!";
-      showToast(msg, 'error');
-      return null;
-    }
 
     btnElement.style.opacity = '0.5';
     btnElement.disabled = true;
@@ -1017,6 +1012,9 @@ function setupSharing() {
     try {
       const pitchEl = document.querySelector('.pitch-card'); // Capture the full card, not just wrapper
       const bgColor = getComputedStyle(pitchEl).getPropertyValue('--pitch-bg-outer').trim() || '#131f24';
+
+      // Hide remove buttons before capture
+      document.querySelectorAll('.remove-player-btn').forEach(btn => btn.style.display = 'none');
 
       const blob = await domtoimage.toBlob(pitchEl, {
         bgcolor: bgColor, // Use the actual theme color
@@ -1043,6 +1041,8 @@ function setupSharing() {
     } finally {
       btnElement.style.opacity = '1';
       btnElement.disabled = false;
+      // Restore remove buttons after capture
+      document.querySelectorAll('.remove-player-btn').forEach(btn => btn.style.display = '');
     }
   };
 
@@ -1621,6 +1621,7 @@ function renderPitch() {
            data-id="${node.id}"
            title="${displayName}">
         
+        ${isFilled ? `<div class="remove-player-btn" data-id="${node.id}" title="${translations[appState.language].clearSlotBtn || 'Clear'}">&times;</div>` : ''}
         ${isCaptain ? '<div class="captain-badge-overlay">C</div>' : ''}
         ${nodeInnerHtml}
         
@@ -1649,6 +1650,15 @@ function renderPitch() {
       }
 
       const nodeId = nodeEl.dataset.id;
+
+      // Handle Remove Button Click
+      if (e.target.classList.contains('remove-player-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        delete appState.lineup[nodeId];
+        renderPitch();
+        return;
+      }
 
       // Handle "Text" tool logic (Manual Entry)
       if (appState.activeTool === 'text') {

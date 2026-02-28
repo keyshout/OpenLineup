@@ -8,8 +8,10 @@ All notable changes to this project will be documented in this file.
 - **Global Player Search (Static Fallback):** Overhauled the player search logic to allow finding and adding any player directly from the central SQLite database (`database.sqlite`) without needing to select a club first.
 - **Süper Lig Legends Draft:** Injected 14 retired legend players into the local database (via the new `add_legends.js` scraper) allowing users to add iconic names like Alex, Hagi, Taffarel directly through the global search.
 - **False-9 Formation:** Added a custom `4-6-0 (False 9)` tactical formation logic inside the JavaScript and UI definitions.
+- **Player Removal UI:** Users can now remove an individual player from a pitch slot via a delete button (visible on hover for desktop, always visible but semi-transparent on touch mobile devices). The capture logic safely hides these elements when an image is being generated.
 - **Improved Toast Notifications:** Error messages are now anchored cleanly to the pitch context without overflowing the screen on mobile devices.
 - **Dynamic Image Background:** Exported pitch images (`dom-to-image-more`) now accurately capture the dynamic theme color of the outer layout.
+- **Flexible Saving (No Club Needed):** Removed the validation requirement to verify an active club before downloading an image, allowing users to share global, multi-club (or unselected-club) lineups seamlessly.
 
 ### Changed
 - **Mobile Responsive Redesign:** Overhauled the main layout to stack horizontally aligned components into vertical rows on devices smaller than `768px`.
