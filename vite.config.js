@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig(({ command }) => {
+    const base = command === 'serve' ? '/' : '/OpenLineup/';
     return {
-        base: './', // GitHub Pages ve statik sunucular için relative path (göreceli yol) yapılandırması
+        base,
         server: command === 'serve' ? {
             proxy: {
                 '/api': {
