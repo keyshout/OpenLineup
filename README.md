@@ -6,7 +6,7 @@
   [![Vite](https://img.shields.io/badge/Vite-B73BFE?logo=vite&logoColor=white)](https://vitejs.dev/)
   [![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-  **[Live Demo (Coming Soon)](#)**
+  **[Live Demo](https://keyshout.github.io/OpenLineup/)**
 </div>
 
 ---
