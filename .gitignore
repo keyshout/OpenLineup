@@ -10,6 +10,9 @@ lerna-debug.log*
 # Scraper and DB Update Scripts (Backend/Admin Only)
 scripts/add_legends.js
 scripts/add_retired.js
+scripts/add_more_legends.js
+extra_legends.txt
+test_scrape.mjs
 
 node_modules
 dist
