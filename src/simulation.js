@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function initDB() {
     try {
         // Fetch the SQLite file as an ArrayBuffer, using relative path to work for GitHub Pages
-        const response = await fetch('./data/database.sqlite');
+        const response = await fetch(import.meta.env.BASE_URL + 'data/database.sqlite');
         if (!response.ok) throw new Error("SQLite DB Download Failed");
         const buffer = await response.arrayBuffer();
 
@@ -222,7 +222,8 @@ async function initDB() {
 
 function getSafeImageUrl(url) {
     if (!url) return '';
-    if (url.startsWith('/data') || url.startsWith('./data')) return url.replace(/^\.?\/data/, './data');
+    const base = import.meta.env.BASE_URL;
+    if (url.startsWith('/data') || url.startsWith('./data')) return base + url.replace(/^\.?\/data\//, 'data/');
     return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 }
 
