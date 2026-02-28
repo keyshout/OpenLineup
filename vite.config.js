@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => {
             rollupOptions: {
                 input: {
                     main: resolve(__dirname, 'index.html'),
-                    simulation: resolve(__dirname, 'simulation.html')
+                    simulation: resolve(__dirname, 'simulation/index.html')
                 }
             }
         }
