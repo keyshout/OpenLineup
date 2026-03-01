@@ -527,10 +527,11 @@ function startGame() {
     // MP4 öncelikli (Chrome 130+), yoksa WebM VP9
     let opts = null;
     const tryMimes = [
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2', // MP4 H264 + AAC (Twitter uyumlu)
         'video/mp4;codecs=avc1.42E01E',
         'video/mp4',
-        'video/webm;codecs=vp9',
-        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
         'video/webm'
     ];
     for (const mime of tryMimes) {
@@ -543,6 +544,7 @@ function startGame() {
 
     try {
         mediaRecorder = new MediaRecorder(stream, opts);
+        console.log('📹 MediaRecorder codec:', mediaRecorder.mimeType);
     } catch (e) {
         console.warn('MediaRecorder opts failed, using defaults:', e);
         mediaRecorder = new MediaRecorder(stream);
