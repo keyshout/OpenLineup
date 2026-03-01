@@ -177,17 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-download-video').addEventListener('click', downloadVideo);
     document.getElementById('btn-share-x').addEventListener('click', shareToX);
     document.getElementById('btn-restart').addEventListener('click', () => {
-        document.getElementById('sim-winner-overlay').classList.add('hidden');
-        startGame();
+        document.getElementById('sim-winner-panel').style.display = 'none';
+        toggleSettings(true); // ayarları tekrar aç
     });
-
-    // Modal Kapat Butonu
-    const btnCloseWinner = document.getElementById('btn-close-winner');
-    if (btnCloseWinner) {
-        btnCloseWinner.addEventListener('click', () => {
-            document.getElementById('sim-winner-overlay').classList.add('hidden');
-        });
-    }
 
     // Renk Değişimi Dinle
     const colorPickers = ['sim-pitch-color', 'sim-goal-color', 'sim-team1-color', 'sim-team2-color'];
@@ -467,17 +459,41 @@ function checkStartReadiness() {
     }
 }
 
-// ----- GAMELOOP & PHYSICS -----
+// Ayarları aktif/pasif yap (maç sırasında kilitlemek için)
+function toggleSettings(enabled) {
+    const ids = [
+        'team1-search', 'team2-search',
+        'sim-pitch-color', 'sim-goal-color', 'sim-team1-color', 'sim-team2-color',
+        'sim-duration', 'clear-team1-btn', 'clear-team2-btn'
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.pointerEvents = enabled ? '' : 'none';
+            el.style.opacity = enabled ? '' : '0.4';
+        }
+    });
+}
 
 function startGame() {
+    // Winner panelini gizle, ayarları kilitle
+    document.getElementById('sim-winner-panel').style.display = 'none';
+    toggleSettings(false);
+
     // EĞER HALA OYNANAN BİR MAÇ VARSA ONU BİTİR / SIFIRLA
     if (isPlaying) {
         isPlaying = false;
         cancelAnimationFrame(animationId);
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-        }
     }
+    // Önceki kaydı temizle
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.onstop = null; // eski callback'i iptal et
+        mediaRecorder.stop();
+    }
+    mediaRecorder = null;
+    if (silentAudioCtx) { silentAudioCtx.close(); silentAudioCtx = null; }
+    if (recordingUrl) { URL.revokeObjectURL(recordingUrl); recordingUrl = null; }
+    recordedChunks = [];
 
     // Reset states
     score1 = 0;
@@ -782,11 +798,15 @@ function handleGoal(scoringTeam) {
     logos[0].x = CENTER_X - 80 * sc; logos[0].y = CENTER_Y;
     logos[1].x = CENTER_X + 80 * sc; logos[1].y = CENTER_Y;
 
-    // Give random kick-off velocities (proportional to canvas)
-    logos.forEach(l => {
-        l.vx = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 4) * sc;
-        l.vy = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 4) * sc;
-    });
+    // Logolar kısa süre duraksasın (gol kutlaması)
+    logos.forEach(l => { l.vx = 0; l.vy = 0; });
+
+    setTimeout(() => {
+        logos.forEach(l => {
+            l.vx = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 4) * sc;
+            l.vy = (Math.random() > 0.5 ? 1 : -1) * (5 + Math.random() * 4) * sc;
+        });
+    }, 300); // 0.8 sn bekleme
 }
 
 
@@ -1161,15 +1181,15 @@ function drawWinnerScreen(alpha = 1) {
 }
 
 function showWinnerOverlay() {
-    const modal = document.getElementById('sim-winner-overlay');
-    modal.classList.remove('hidden');
+    // Sol panelde winner panelini göster + ayarları aç
+    toggleSettings(true);
+    const winnerPanel = document.getElementById('sim-winner-panel');
+    winnerPanel.style.display = 'flex';
 
-    const winnerText = document.getElementById('winner-text');
-    const scoreText = document.getElementById('winner-score-text');
-
-    scoreText.textContent = `${score1} - ${score2}`;
+    document.getElementById('panel-score-text').textContent = `${score1} - ${score2}`;
 
     const t = simTranslations[currentLang];
+    const winnerText = document.getElementById('panel-winner-text');
     if (score1 > score2) {
         winnerText.textContent = t.simTeamWon.replace('%team%', team1.name);
     } else if (score2 > score1) {

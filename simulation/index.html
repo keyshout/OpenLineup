@@ -62,7 +62,8 @@
         <div class="main-layout">
             <!-- Left Sidebar (Configuration) -->
             <aside class="left-sidebar">
-                <div class="controls-panel" style="display:flex; flex-direction:column; gap:20px; height:100%;">
+                <div id="sim-settings" class="controls-panel"
+                    style="display:flex; flex-direction:column; gap:20px; height:100%;">
 
                     <div style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
                         <h2
@@ -117,7 +118,7 @@
                         <div id="team2-results" class="search-results-dropdown hidden"></div>
                     </div>
 
-                    <div class="settings-group" style="margin-top:auto; gap:10px; display:flex; flex-direction:column;">
+                    <div class="settings-group" style="margin-top:15px; gap:10px; display:flex; flex-direction:column;">
                         <div style="display:flex; gap:10px;">
                             <div style="flex:1;">
                                 <label style="font-size:12px;" data-i18n="simPitchColor">Saha Rengi</label>
@@ -158,6 +159,36 @@
                         <span data-i18n="simStartMatch">MAÇA BAŞLA</span>
                     </button>
                 </div>
+
+                <!-- ===== WINNER PANELİ (maç bitince görünecek) ===== -->
+                <div id="sim-winner-panel" class="controls-panel"
+                    style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; height:100%; text-align:center; padding:20px;">
+                    <p
+                        style="font-size:13px; color:var(--text-dim); margin:0; letter-spacing:2px; text-transform:uppercase;">
+                        ⚽ Maç Bitti</p>
+                    <h2 id="panel-winner-text"
+                        style="font-size:22px; color:var(--accent); margin:0; font-family:'Space Grotesk', sans-serif; font-weight:700;">
+                    </h2>
+                    <p id="panel-score-text"
+                        style="font-size:42px; font-weight:bold; margin:0; color:#fff; font-family:'Space Grotesk', sans-serif;">
+                    </p>
+
+                    <div style="display:flex; flex-direction:column; gap:10px; width:100%; margin-top:10px;">
+                        <button id="btn-download-video" class="save-share-btn"
+                            style="background:#ea4335; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; font-size:15px; width:100%; cursor:pointer;">
+                            📹 <span data-i18n="simDownloadVideo">Videoyu İndir</span>
+                        </button>
+                        <button id="btn-share-x" class="save-share-btn"
+                            style="background:#000; color:white; border:1px solid #333; padding:12px; border-radius:8px; font-weight:bold; font-size:15px; width:100%; cursor:pointer;">
+                            <span data-i18n="simShareX">𝕏'te Paylaş</span>
+                        </button>
+                        <button id="btn-restart" class="save-share-btn"
+                            style="background:transparent; color:var(--text-main); border:1px solid var(--border); padding:12px; border-radius:8px; font-weight:bold; font-size:15px; width:100%; cursor:pointer;">
+                            🔄 <span data-i18n="simPlayAgain">Tekrar Oyna</span>
+                        </button>
+                    </div>
+                </div>
+
             </aside>
 
             <!-- Right Main Content (Pitch) -->
@@ -197,35 +228,7 @@
                     </div>
                 </div>
 
-                <!-- Winner Modal Overlay -->
-                <div id="sim-winner-overlay" class="modal-overlay hidden" style="z-index:999;">
-                    <div class="modal-content glass"
-                        style="text-align:center; padding:20px; position:relative; max-width: 400px; width: 90%; height: auto;">
-                        <button id="btn-close-winner"
-                            style="position:absolute; top:10px; right:15px; background:transparent; border:none; color:#fff; font-size:24px; cursor:pointer;"
-                            title="Kapat">&times;</button>
-                        <h2 id="winner-text"
-                            style="font-size:26px; color:var(--accent); margin-top:5px; margin-bottom:5px; font-family:'Space Grotesk', sans-serif;">
-                            <span data-i18n="simMatchOver">Maç Bitti!</span>
-                        </h2>
-                        <p id="winner-score-text" style="font-size:32px; font-weight:bold; margin-bottom:20px;"></p>
 
-                        <div style="display:flex; flex-direction:column; gap:10px; max-width:300px; margin:0 auto;">
-                            <button id="btn-download-video" class="save-share-btn"
-                                style="background:#ea4335; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; font-size:15px;">
-                                📹 <span data-i18n="simDownloadVideo">Videoyu İndir</span>
-                            </button>
-                            <button id="btn-share-x" class="save-share-btn"
-                                style="background:#000; color:white; border:1px solid #333; padding:10px; border-radius:8px; font-weight:bold; font-size:15px;">
-                                <span data-i18n="simShareX">𝕏'te Paylaş</span>
-                            </button>
-                            <button id="btn-restart" class="save-share-btn"
-                                style="background:transparent; color:var(--text-main); border:1px solid var(--border); padding:10px; border-radius:8px; font-weight:bold; font-size:15px;">
-                                <span data-i18n="simPlayAgain">Tekrar Oyna</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
             </section>
         </div>
