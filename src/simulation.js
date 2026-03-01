@@ -100,6 +100,7 @@ const ctx = canvas.getContext('2d');
 let mediaRecorder;
 let recordedChunks = [];
 let recordingUrl = null;
+let silentAudioCtx = null;
 
 // Game State
 let isPlaying = false;
@@ -503,7 +504,24 @@ function startGame() {
 
     // Start MediaRecorder
     recordedChunks = [];
-    const stream = canvas.captureStream(30);
+    const videoStream = canvas.captureStream(30);
+
+    // Sessiz audio track ekle (Twitter ve sosyal medya gereksinimleri için)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    silentAudioCtx = audioCtx;
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0; // tamamen sessiz
+    oscillator.connect(gainNode);
+    const dest = audioCtx.createMediaStreamDestination();
+    gainNode.connect(dest);
+    oscillator.start();
+
+    // Video + audio track'leri birleştir
+    const stream = new MediaStream([
+        ...videoStream.getVideoTracks(),
+        ...dest.stream.getAudioTracks()
+    ]);
 
     const videoBitrate = 5_000_000; // 5 Mbps
     // MP4 öncelikli (Chrome 130+), yoksa WebM VP9
@@ -1062,6 +1080,7 @@ function endGame() {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
             }
+            if (silentAudioCtx) { silentAudioCtx.close(); silentAudioCtx = null; }
             showWinnerOverlay();
         }
     }
